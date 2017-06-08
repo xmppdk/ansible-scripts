@@ -4,5 +4,4 @@
   tags:
     - prosody
   roles: 
-    - common
     - prosody
