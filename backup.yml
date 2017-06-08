@@ -1,0 +1,8 @@
+---
+- name: Install and configure Duplicity
+  hosts: triton
+  tags:
+    - duplicity
+    - backup
+  roles: 
+    - duplicity

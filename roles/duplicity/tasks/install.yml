@@ -1,5 +1,6 @@
 ---
-- name: install duplicity
-  apt:
-    name: duplicity
-    state: present
+- name: install required apps for backup
+  apt: name={{ item }} state=installed
+  with_items:
+    - duplicity
+    - gnupg
