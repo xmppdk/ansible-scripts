@@ -1,0 +1,5 @@
+[triton]
+triton.xmpp.dk
+
+[prosody:children]
+triton

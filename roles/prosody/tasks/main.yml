@@ -1,0 +1,47 @@
+---
+- include_vars: host_vars/triton.yml
+# tasks file for ansible-role-prosody
+- name: Add Prosody repository key
+  apt_key: url=https://prosody.im/files/prosody-debian-packages.key state=present
+
+- name: Add Prosody repository
+  apt_repository: repo="deb http://packages.prosody.im/debian {{ ansible_distribution_release }} main"
+
+- name: Install Prosody
+  apt: name={{ item }}
+  with_items:
+    - mercurial
+    - lua-event
+    - lua-zlib
+    - prosody
+
+- name: Install Prosody modules
+  get_url: 
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: 0755
+    owner: root
+    group: root
+    force: yes
+  with_items:
+    - { url: 'https://hg.prosody.im/prosody-modules/raw-file/tip/mod_e2e_policy/mod_e2e_policy.lua', dest: '/usr/lib/prosody/modules/mod_e2e_policy.lua' }
+
+- name: Download Prosody Configuration File
+  get_url:
+    url: "https://git.data.coop/xmpp.dk/configuration/raw/master/prosody.cfg.lua"
+    dest: "/etc/prosody/prosody.cfg.lua"
+    mode: 0755
+    owner: root
+    group: root
+    force: yes
+  notify: restart prosody
+
+- name: Create parameters for DiffieHellman (could take a while)
+  command: "openssl dhparam -out /etc/prosody/certs/dhparams{{ prosody_dhparam_length }}.pem {{ prosody_dhparam_length }} creates=/etc/prosody/certs/dhparams{{ prosody_dhparam_length }}.pem"
+  notify: restart prosody
+
+- name: Get prosody external modules repository
+  hg: repo=https://hg.prosody.im/prosody-modules/ dest=/usr/share/prosody-external-modules
+
+- name: Start and enable prosody on boot
+  service: name=prosody state=started enabled=yes

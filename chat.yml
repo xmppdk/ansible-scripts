@@ -1,0 +1,8 @@
+---
+- name: Configure the Prosody server
+  hosts: triton
+  tags:
+    - prosody
+  roles: 
+    - common
+    - prosody

@@ -1,0 +1,5 @@
+[triton]
+test.graffen.dk
+
+[prosody:children]
+triton
