@@ -1,0 +1,6 @@
+---
+- name: Restore backup from remote
+  environment:
+    PASSPHRASE: "{{ gpg_key.passphrase }}"
+  command: /usr/bin/duplicity --encrypt-key C19BE4F9 restore scp://backupuser@backup.graffen.dk//home/backupuser/backups/triton.xmpp.dk /root/temp/
+  

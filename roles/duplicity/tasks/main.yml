@@ -2,3 +2,4 @@
 - name: Import secrets
   include_vars: secrets.yml
 - include: install.yml
+- include: restorebackups.yml
