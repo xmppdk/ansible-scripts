@@ -1,6 +1,32 @@
 ---
-- name: install required apps for backup
+- name: Install required apps for backup
   apt: name={{ item }} state=installed
   with_items:
     - duplicity
     - gnupg
+
+- name: Copy GPG key
+  copy:
+    content: "{{ gpg_key.private_key }}"
+    dest: "/root/seckey.gpg.asc"
+    mode: 0600
+    owner: root
+    group: root
+
+- name: Import GPG key
+  command: gpg --import /root/seckey.gpg.asc
+  args: 
+    creates: /root/.gnupg/secring.gpg
+
+- name: Create .ssh dir
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: 0600
+
+- name: Install SSH key
+  copy: content="{{ item.content }}" dest="/root/.ssh/{{item.filename}}" mode=0600 owner=root group=root
+  with_items: 
+    - { content: "{{ssh_key.private_key}}", filename: id_rsa }
+    - { content: "{{ssh_key.public_key}}", filename: id_rsa.pub }
+  no_log: true
