@@ -1,0 +1,5 @@
+---
+- name: install duplicity
+  apt:
+    name: duplicity
+    state: present
