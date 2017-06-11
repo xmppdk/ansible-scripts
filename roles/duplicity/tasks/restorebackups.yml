@@ -1,6 +1,17 @@
 ---
-- name: Restore backup from remote
+- name: Ensure ssh known_hosts exists
+  file:
+    path: /root/.ssh/known_hosts
+    state: touch
+
+- name: Add SSH Key to known_hosts
+  lineinfile:
+    dest: /root/.ssh/known_hosts
+    line: "{{ ssh_key.known_hosts }}"
+    state: present
+
+- name: Restore Prosody data files
   environment:
     PASSPHRASE: "{{ gpg_key.passphrase }}"
-  command: /usr/bin/duplicity --encrypt-key C19BE4F9 restore scp://backupuser@backup.graffen.dk//home/backupuser/backups/triton.xmpp.dk /root/temp/
+  command: /usr/bin/duplicity --encrypt-key C19BE4F9 --file-to-restore var/lib/prosody ssh://backupuser@backup.graffen.dk//home/backupuser/backups/triton.xmpp.dk /var/lib/prosody
   
